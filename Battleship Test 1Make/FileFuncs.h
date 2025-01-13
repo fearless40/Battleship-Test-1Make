@@ -1,16 +1,22 @@
 #ifndef FILEFUNCS_H
 #define FILEFUNCS_H
 
-
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdint.h>
 #include "Helper.h"
 #include "UserInput.h"
+#include <ctype.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int load_file(char* filename, bbboard* myboard);
+enum LoadFileResult
+{
+    LFR_NoFileFound = 0,
+    LFR_Success = 1,
+    LFR_CORRUPT = -1,
+    LFR_OUTOFMEM = -2
+};
+
+LoadFileResult load_file(const char *filename, bbboard *myboard);
 
 #endif // !FILEFUNCS_H

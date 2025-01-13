@@ -3,6 +3,42 @@
 #include "FileFuncs.h"
 #include "Helper.h"
 
+bool load_board(const char *filename, bbboard *myboard)
+{
+    if (myboard && myboard->loaded)
+    {                                        // There is already a file loaded, do a graceful cleanup and memory cleanup
+        fclose(myboard->savefile);           // Close the file
+        free(myboard->mine);                 // Free the dynamically allocated memory
+        memset(myboard, 0, sizeof(bbboard)); // Do a complete reset
+        myboard->interaactive_go = false;
+    }
+    LoadFileResult result = load_file(filename, myboard);
+    if (result != LFR_Success)
+    { // Failed to load the board
+
+        switch (result)
+        {
+        case LFR_NoFileFound:
+            printf_s(
+                "ERROR: Unable to load the file: %s\nPlease make sure that the file is in the directory or that the "
+                "whole path is present.",
+                filename);
+            break;
+        case LFR_OUTOFMEM:
+            puts("ERROR: There was a memory error!");
+            break;
+        case LFR_CORRUPT:
+            puts("ERROR: Unable to load the file, the file appears corrupt or incorrectly formatted.");
+            break;
+        }
+
+        return false;
+    }
+    puts("The file was loaded successfully.");
+    myboard->interaactive_go = false;
+    return true;
+}
+
 void evaluate_cmd_line(int argc, char *argv[], bbboard *myboard)
 {
     for (int i = 1; i < argc; ++i)

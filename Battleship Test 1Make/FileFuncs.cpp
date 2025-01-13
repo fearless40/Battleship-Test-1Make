@@ -26,33 +26,47 @@ LoadFileResult load_file(const char *filename, bbboard *myboard)
     int row_count = 0;
 
     if (fopen_s(&myboard->savefile, filename, "r") != 0)
-    { // Failed to open the file
+    {
         myboard->savefile = NULL;
         ERR(LFR_NoFileFound)
     }
 
     if (!(fscanf_s(myboard->savefile, "%i %i", &myboard->rows, &myboard->columns) == 2))
+    {
+        puts("Unable to read row / col.");
         ERR(LFR_CORRUPT) // Failed to read the correct two lines (rows and columns) file is corrupt
+    }
 
     if (myboard->rows <= 0 || myboard->columns <= 0 || myboard->rows > UINT16_MAX || myboard->columns > UINT16_MAX)
+    {
+        puts("Row and col are too big or small.");
         ERR(LFR_CORRUPT) // Rows/columns are too small or too large for unsigned int 16 bit
+    }
 
     if (myboard->rows * myboard->columns > INT_MAX)
+    {
+        puts("Row*col too large.");
         ERR(LFR_CORRUPT) // The rows and columns are too big
+    }
 
     // Dynamically allocate the memory for the array using pointer arithmetic
     total_cells = (size_t)myboard->rows * (size_t)myboard->columns;
     myboard->mine = (int *)malloc(sizeof(int) * total_cells);
 
     if (myboard->mine == NULL)
+    {
+        puts("Out of memory.");
         ERR(LFR_OUTOFMEM) // Memory allocation failed
+    }
 
-    max_row_size =
-        7 * myboard->columns +
-        2; // Create a buffer of size 6 (unsigned int max size including -) + comma * columns + 2 for \0 and \n
-    buf = (char *)malloc(max_row_size); // Create a temporary buffer that will contain the row of data and ,'s
+    // Create a buffer of size 6 (unsigned int max size including -) + comma * columns + 2 for \0 and \n
+    max_row_size = 7 * myboard->columns + 2;
+
+    // Create a temporary buffer that will contain the row of data and ,'s
+    buf = (char *)malloc(max_row_size);
     if (buf == NULL)
     { // Memory allocation failed
+        puts("Out of memory.");
         ERR(LFR_OUTOFMEM);
     }
 
@@ -61,6 +75,7 @@ LoadFileResult load_file(const char *filename, bbboard *myboard)
     {
         if (fgets(buf, max_row_size, myboard->savefile) == NULL)
         { // It failed to read
+            puts("Unable to read a line of input in.");
             ERR(LFR_CORRUPT)
         }
 
@@ -68,6 +83,7 @@ LoadFileResult load_file(const char *filename, bbboard *myboard)
         size_t len = strlen(buf);
         if (len == 0) // Unexpected blank line, file is corrupt
         {
+            puts("Blank line found in file.");
             ERR(LFR_CORRUPT)
         }
         if (len > 0 && buf[len - 1] == '\n' || buf[len - 1] == '\r')
@@ -84,6 +100,7 @@ LoadFileResult load_file(const char *filename, bbboard *myboard)
         char *errptr;
         if (!token)
         { // File is corrupt
+            puts("Invalid token found.");
             ERR(LFR_CORRUPT)
         }
         int col_count = 0;
@@ -91,11 +108,13 @@ LoadFileResult load_file(const char *filename, bbboard *myboard)
         {
             if (col_count >= myboard->columns)
             { // Too many tokens data is corrupt
+                puts("Number of columns in file more than specified.");
                 ERR(LFR_CORRUPT)
             }
             myboard->mine[(row_count * myboard->columns) + col_count] = strtol(token, &errptr, 10);
             if (errptr == token || *errptr != '\0')
             { // The string contains no digits or non-digit characters
+                puts("Invalid format of data value.");
                 ERR(LFR_CORRUPT);
             }
             token = strtok_s(NULL, ",", &context); // Get next token
@@ -103,6 +122,7 @@ LoadFileResult load_file(const char *filename, bbboard *myboard)
         }
         if (col_count != myboard->columns)
         { // Corrupt file, not enough tokens or too many tokens
+            puts("Number of col is not equal to what is expected");
             ERR(LFR_CORRUPT)
         }
         row_count++;
@@ -121,3 +141,5 @@ cleanup:
     myboard->interaactive_go = false;
     return err_code;
 }
+
+#undef ERR

@@ -14,8 +14,7 @@ bool load_board(const char *filename, bbboard *myboard)
     }
     LoadFileResult result = load_file(filename, myboard);
     if (result != LFR_Success)
-    { // Failed to load the board
-
+    {
         switch (result)
         {
         case LFR_NoFileFound:
@@ -31,11 +30,9 @@ bool load_board(const char *filename, bbboard *myboard)
             puts("ERROR: Unable to load the file, the file appears corrupt or incorrectly formatted.");
             break;
         }
-
         return false;
     }
     puts("The file was loaded successfully.");
-    myboard->interaactive_go = false;
     return true;
 }
 
@@ -43,13 +40,16 @@ void evaluate_cmd_line(int argc, char *argv[], bbboard *myboard)
 {
     for (int i = 1; i < argc; ++i)
     {
-        if (strcmp(argv[i], "--load"))
+        if (strcmp(argv[i], "--load") == 0)
         {
             if (i + 1 > argc)
             {
                 puts("Missing --load <filename>");
                 exit(-1);
             }
+
+            printf_s("Loading file: %s\n", argv[i + 1]);
+
             if (!load_board(argv[++i], myboard))
             {
                 puts("Unable to load. Quitting.");
@@ -57,8 +57,24 @@ void evaluate_cmd_line(int argc, char *argv[], bbboard *myboard)
             }
         }
 
-        if (strcmp(argv[i], "--guess"))
+        if (strcmp(argv[i], "--guess") == 0)
         {
+            myboard->interaactive_go = false;
+            for (int guessId = i + 1; guessId < argc; ++guessId)
+            {
+                printf("%s=", argv[guessId]);
+
+                int result = 0;
+                if (query_arg(myboard, argv[guessId], result))
+                {
+                    printf_s("%i ", result);
+                }
+                else
+                {
+                    puts("oob ");
+                }
+            }
+            return;
         }
     }
 }

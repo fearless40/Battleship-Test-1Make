@@ -22,4 +22,6 @@ struct bbboard
     int *opp;  // Dynamically allocate for a board for the opponent
 };
 
+bool board_get_value(bbboard *myboard, int row, int col, int &result);
+
 #endif // HELPER_H

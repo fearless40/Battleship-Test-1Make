@@ -11,42 +11,62 @@
 #include <stdlib.h>
 #include <string.h>
 
+void print(char *begin, char *end)
+{
+    char *i = begin;
+    while (i != end)
+    {
+        fputc(*i, stdout);
+        ++i;
+    }
+}
+
 char *match_white_space(char *next)
 {
+    // puts("whitespace");
     char *ret = next;
-    while (*ret != '\0' || *ret != ' ' || *ret != '\t')
+    while (*ret == '\0' || *ret == ' ' || *ret == '\t')
+    {
+        // fputc(*ret, stdout);
         ++ret;
+    }
     return ret;
 }
 
 char *match_numbers(char *next)
 {
+    // puts("numbers");
     char *ret = next;
     while (*ret >= '0' && *ret <= '9')
+    {
+        // fputc(*ret, stdout);
         ++ret;
+    }
     return ret;
 }
 
 char *match_lcase_letters(char *next)
 {
+    // puts("lcase a-z");
     char *ret = next;
     char lower = tolower((unsigned int)*ret);
 
     while (lower >= 'a' && lower <= 'z')
     {
+        // fputc(lower, stdout);
         ++ret;
-        char lower = tolower((unsigned int)*ret);
+        lower = tolower((unsigned int)*ret);
     }
+    return ret;
 }
 
 int fromBase26(char *begin, char *end)
 {
-
     int acc = 0;
     for (char *i = begin; i != end; ++i)
     {
-        size_t index = i - begin;
-        acc += pow(26, index - 1) + (tolower(*i) - 'a');
+        size_t index = end - i;
+        acc += pow(26, index - 1) * (tolower(*i) - 'a');
     }
     return acc;
 }
@@ -56,15 +76,50 @@ int fromBase10(char *begin, char *end)
     int acc = 0;
     for (char *i = begin; i != end; ++i)
     {
-        size_t index = i - begin;
-        acc += pow(10, index - 1) + (*i - '0');
+        size_t index = end - i;
+        acc += pow(10, index - 1) * (*i - '0');
     }
     return acc;
 }
 
+bool query_arg_comma(bbboard *myboard, char *query_arg, int &result)
+{
+    // White space already matched
+    // skip ws processing
+    char *begin = query_arg;
+    // Match numbers until the comma
+    int col = 0;
+    int row = 0;
+
+    {
+        char *end = match_numbers(begin);
+        if (end == begin)
+        {
+            return false;
+        }
+        col = fromBase10(begin, end);
+        begin = end;
+    }
+    // Check for white space before the comma
+    begin = match_white_space(begin);
+    if (*begin != ',')
+        return false;
+    ++begin;
+    begin = match_white_space(begin);
+    {
+        char *end = match_numbers(begin);
+        if (end == begin)
+        {
+            return false;
+        }
+        row = fromBase10(begin, end);
+    }
+
+    return board_get_value(myboard, row, col, result);
+}
+
 bool query_arg(bbboard *myboard, char *query, int &result)
 {
-
     int col = 0;
     int row = 0;
     char *next = match_white_space(query);
@@ -73,6 +128,7 @@ bool query_arg(bbboard *myboard, char *query, int &result)
         if (end == next)
         {
             // attempt to parse comma format
+            return query_arg_comma(myboard, next, result);
         }
         col = fromBase26(next, end);
         next = end;
@@ -88,11 +144,7 @@ bool query_arg(bbboard *myboard, char *query, int &result)
         next = end;
     }
 
-    if (row > myboard->rows || col > myboard->columns)
-        return false;
-
-    result = myboard->mine[row * myboard->columns + col];
-    return true;
+    return board_get_value(myboard, row, col, result);
 }
 
 /* query_array, will query and create a string with the output of each input*/
@@ -218,28 +270,7 @@ int main(int argc, char *argv[])
     {
         output_string("Loaded with too few or no arguments.  Proceeding.");
     }
-    else
-    {
-        args_in = 1;
-        memset(mybuf, '\0', MAX_INPUT); // Initialize the string
 
-        for (int i = 1; i < argc; ++i)
-        { // Concatenate argv into a string for evaluate_input
-            int written = snprintf(current, remaining, "%s%s", argv[i], (i < argc - 1) ? " " : "");
-            if (written < 0 || (size_t)written >= remaining)
-            {
-                output_string("The arguments are too long to fit in the string.");
-                return 1;
-            }
-            current += written;
-            remaining -= written;
-        }
-    }
-    if (!args_in)
-    {
-        output_string("Welcome to Battleship Fun\nPlease enter --help for help\n--load <filename>\n--quit to quit\nor "
-                      "enter a value to check the file\n:");
-    }
     bbboard myboard;                      // Declare the new board which will hold the arrays and types
     memset(&myboard, 0, sizeof(myboard)); // Clear out the myboard and fill it with only 0's.
     myboard.interaactive_go = false;
@@ -248,27 +279,7 @@ int main(int argc, char *argv[])
 
     while (myboard.interaactive_go)
     {
-        if (!args_in)
-        { // No arguments in the command line
-            fgets(mybuf, MAX_INPUT, stdin);
-            evaluate_input(mybuf, &myboard);
-        }
-        else
-        {
-            evaluate_input(mybuf, &myboard);
-            args_in = 0; // Future loops will no longer be checking for file input
-        }
+        fgets(mybuf, MAX_INPUT, stdin);
+        evaluate_input(mybuf, &myboard);
     }
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started:
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files
-//   to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

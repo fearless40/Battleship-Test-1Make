@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\spiva\Programming\Battleship-Test-1Make\Battleship Test 1Make\Battleship Test 1Make.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\spiva\Programming\Battleship-Test-1Make\Battleship Test 1Make\UserInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\spiva\Programming\Battleship-Test-1Make\Battleship Test 1Make\FileFuncs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\spiva\Programming\Battleship-Test-1Make\Battleship Test 1Make\Battleship Test 1Make.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\spiva\Programming\Battleship-Test-1Make\Battleship Test 1Make\Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\spiva\Programming\Battleship-Test-1Make\Battleship Test 1Make\UserInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\spiva\Programming\Battleship-Test-1Make\Battleship Test 1Make\FileFuncs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\spiva\Programming\Battleship-Test-1Make\Battleship Test 1Make\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{D837BFD0-EAAD-304C-9AE9-2B59F0E69208}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{930A4712-861D-391C-BB56-CE72806BA93B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

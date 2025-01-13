@@ -1,0 +1,3 @@
+C:/Users/spiva/Programming/Battleship-Test-1Make/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/spiva/Programming/Battleship-Test-1Make/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/spiva/Programming/Battleship-Test-1Make/build/Battleship Test 1Make/CMakeFiles/BTestMake.dir

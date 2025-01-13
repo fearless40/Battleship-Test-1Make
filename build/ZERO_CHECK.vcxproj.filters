@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\spiva\Programming\Battleship-Test-1Make\build\CMakeFiles\083299ec68a693c2e018c0c516b5eb39\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{1A56201E-58C2-3162-A4BB-69D830596313}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -48,8 +48,17 @@ void evaluate_cmd_line(int argc, char *argv[], bbboard *myboard)
             if (i + 1 > argc)
             {
                 puts("Missing --load <filename>");
-                exit(0);
+                exit(-1);
             }
+            if (!load_board(argv[++i], myboard))
+            {
+                puts("Unable to load. Quitting.");
+                exit(-1);
+            }
+        }
+
+        if (strcmp(argv[i], "--guess"))
+        {
         }
     }
 }

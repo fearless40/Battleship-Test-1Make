@@ -11,6 +11,90 @@
 #include <stdlib.h>
 #include <string.h>
 
+char *match_white_space(char *next)
+{
+    char *ret = next;
+    while (*ret != '\0' || *ret != ' ' || *ret != '\t')
+        ++ret;
+    return ret;
+}
+
+char *match_numbers(char *next)
+{
+    char *ret = next;
+    while (*ret >= '0' && *ret <= '9')
+        ++ret;
+    return ret;
+}
+
+char *match_lcase_letters(char *next)
+{
+    char *ret = next;
+    char lower = tolower((unsigned int)*ret);
+
+    while (lower >= 'a' && lower <= 'z')
+    {
+        ++ret;
+        char lower = tolower((unsigned int)*ret);
+    }
+}
+
+int fromBase26(char *begin, char *end)
+{
+
+    int acc = 0;
+    for (char *i = begin; i != end; ++i)
+    {
+        size_t index = i - begin;
+        acc += pow(26, index - 1) + (tolower(*i) - 'a');
+    }
+    return acc;
+}
+
+int fromBase10(char *begin, char *end)
+{
+    int acc = 0;
+    for (char *i = begin; i != end; ++i)
+    {
+        size_t index = i - begin;
+        acc += pow(10, index - 1) + (*i - '0');
+    }
+    return acc;
+}
+
+bool query_arg(bbboard *myboard, char *query, int &result)
+{
+
+    int col = 0;
+    int row = 0;
+    char *next = match_white_space(query);
+    {
+        char *end = match_lcase_letters(next);
+        if (end == next)
+        {
+            // attempt to parse comma format
+        }
+        col = fromBase26(next, end);
+        next = end;
+    }
+    // Scan for row now
+    {
+        char *end = match_numbers(next);
+        if (end == next)
+        {
+            // Error
+        }
+        row = fromBase10(next, end);
+        next = end;
+    }
+
+    if (row > myboard->rows || col > myboard->columns)
+        return false;
+
+    result = myboard->mine[row * myboard->columns + col];
+    return true;
+}
+
 /* query_array, will query and create a string with the output of each input*/
 /* input types can be A1,A2,A3,B4  or A1*/
 void query_array(bbboard *myboard, char *opbuf, int array_choice = 1)
@@ -159,6 +243,8 @@ int main(int argc, char *argv[])
     bbboard myboard;                      // Declare the new board which will hold the arrays and types
     memset(&myboard, 0, sizeof(myboard)); // Clear out the myboard and fill it with only 0's.
     myboard.interaactive_go = false;
+
+    evaluate_cmd_line(argc, argv, &myboard);
 
     while (myboard.interaactive_go)
     {
